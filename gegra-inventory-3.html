@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="GEGRA">
+<title>GEGRA — Inventory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --brand: #1a56db;
+  --brand-dark: #1345b5;
+  --brand-light: #e8f0fe;
+  --brand-text: #0f3a9e;
+  --bg: #f8f9fc;
+  --surface: #ffffff;
+  --surface2: #f1f4f9;
+  --border: rgba(0,0,0,0.08);
+  --border-strong: rgba(0,0,0,0.14);
+  --text: #111827;
+  --text2: #6b7280;
+  --text3: #9ca3af;
+  --success-bg: #ecfdf5; --success: #065f46; --success-border: #a7f3d0;
+  --danger-bg: #fef2f2; --danger: #991b1b; --danger-border: #fca5a5;
+  --warn-bg: #fffbeb; --warn: #92400e; --warn-border: #fcd34d;
+  --info-bg: #eff6ff; --info: #1e40af; --info-border: #bfdbfe;
+  --radius: 10px; --radius-lg: 14px; --radius-xl: 20px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+  --font: 'DM Sans', sans-serif;
+  --mono: 'DM Mono', monospace;
+  --transition: 0.18s ease;
+}
+[data-theme="dark"] {
+  --bg: #0f1117; --surface: #1a1d27; --surface2: #22263a;
+  --border: rgba(255,255,255,0.07); --border-strong: rgba(255,255,255,0.12);
+  --text: #f1f5f9; --text2: #94a3b8; --text3: #64748b;
+  --brand-light: #1e2d5a; --brand-text: #93b8f8;
+  --success-bg: #052e1a; --success: #6ee7b7; --success-border: #065f46;
+  --danger-bg: #2d0a0a; --danger: #fca5a5; --danger-border: #991b1b;
+  --warn-bg: #2d1a00; --warn: #fcd34d; --warn-border: #92400e;
+  --info-bg: #0f1e3d; --info: #93b8f8; --info-border: #1e40af;
+  --shadow: 0 1px 3px rgba(0,0,0,0.3); --shadow-md: 0 4px 12px rgba(0,0,0,0.3);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{height:100%;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100%;font-size:15px;transition:background var(--transition),color var(--transition);}
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;flex-direction:column;}
+input,select,textarea,button{font-family:var(--font);font-size:15px;}
+button{cursor:pointer;}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 18px;border-radius:var(--radius);border:1.5px solid var(--border-strong);background:var(--surface);color:var(--text);font-size:14px;font-weight:500;transition:all var(--transition);white-space:nowrap;}
+.btn:hover{background:var(--surface2);}
+.btn:active{transform:scale(0.97);}
+.btn-primary{background:var(--brand);color:#fff;border-color:var(--brand);}
+.btn-primary:hover{background:var(--brand-dark);border-color:var(--brand-dark);}
+.btn-danger{background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border);}
+.btn-sm{padding:6px 12px;font-size:13px;}
+.btn-full{width:100%;}
+.btn-icon{width:36px;height:36px;padding:0;border-radius:var(--radius);}
+
+/* INPUTS */
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:12px;font-weight:600;color:var(--text2);letter-spacing:0.04em;text-transform:uppercase;}
+.field input,.field select,.field textarea{padding:10px 13px;border:1.5px solid var(--border-strong);border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:15px;transition:border-color var(--transition),box-shadow var(--transition);outline:none;width:100%;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--brand);box-shadow:0 0 0 3px rgba(26,86,219,0.12);}
+.field textarea{resize:vertical;min-height:72px;line-height:1.5;}
+.field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;box-shadow:var(--shadow);}
+.card-title{font-size:15px;font-weight:600;color:var(--text);margin-bottom:1rem;}
+
+/* GRID */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+@media(max-width:600px){.g2{grid-template-columns:1fr;}.g3{grid-template-columns:1fr 1fr;}.g4{grid-template-columns:1fr 1fr;}}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;letter-spacing:0.02em;}
+.badge-out{background:var(--danger-bg);color:var(--danger);}
+.badge-return{background:var(--success-bg);color:var(--success);}
+.badge-ok{background:var(--success-bg);color:var(--success);}
+.badge-low{background:var(--warn-bg);color:var(--warn);}
+.badge-empty{background:var(--danger-bg);color:var(--danger);}
+.badge-admin{background:var(--info-bg);color:var(--info);}
+.badge-tech{background:var(--surface2);color:var(--text2);}
+
+/* ALERTS */
+.alert{padding:10px 14px;border-radius:var(--radius);font-size:13px;font-weight:500;display:none;margin-bottom:12px;}
+.alert-err{background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);}
+.alert-ok{background:var(--success-bg);color:var(--success);border:1px solid var(--success-border);}
+.alert-warn{background:var(--warn-bg);color:var(--warn);border:1px solid var(--warn-border);}
+
+/* STAT CARDS */
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem;box-shadow:var(--shadow);}
+.stat .lbl{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.05em;text-transform:uppercase;}
+.stat .val{font-size:26px;font-weight:600;margin-top:4px;line-height:1;}
+.stat .sub{font-size:12px;color:var(--text2);margin-top:4px;}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);box-shadow:var(--shadow);}
+.tbl{width:100%;border-collapse:collapse;font-size:13px;}
+.tbl th{font-size:11px;font-weight:600;color:var(--text2);text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--surface2);white-space:nowrap;letter-spacing:0.03em;text-transform:uppercase;}
+.tbl td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text);white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis;}
+.tbl tr:last-child td{border-bottom:none;}
+.tbl tr:hover td{background:var(--surface2);}
+
+/* TOP BAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:var(--shadow);}
+.topbar-logo{font-size:20px;font-weight:700;color:var(--brand);letter-spacing:-0.5px;}
+.topbar-sub{font-size:12px;color:var(--text2);margin-top:1px;}
+.topbar-right{display:flex;align-items:center;gap:8px;}
+
+/* TABS */
+.tabs{display:flex;gap:4px;padding:0.75rem 1.25rem;background:var(--surface);border-bottom:1px solid var(--border);overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.tab{font-size:13px;font-weight:500;padding:7px 14px;border-radius:var(--radius);border:none;background:transparent;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all var(--transition);}
+.tab:hover{background:var(--surface2);color:var(--text);}
+.tab.active{background:var(--brand-light);color:var(--brand-text);font-weight:600;}
+
+/* CONTENT */
+.content{flex:1;padding:1.25rem;max-width:900px;width:100%;margin:0 auto;}
+.section-gap{display:flex;flex-direction:column;gap:1rem;}
+
+/* LOGIN SCREEN */
+.login-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;background:var(--bg);}
+.login-card{width:100%;max-width:380px;}
+.login-logo{text-align:center;margin-bottom:2rem;}
+.login-logo .wordmark{font-size:36px;font-weight:700;color:var(--brand);letter-spacing:-1px;}
+.login-logo .tagline{font-size:13px;color:var(--text2);margin-top:4px;}
+
+/* CONFIRM OVERLAY */
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);display:none;align-items:flex-end;justify-content:center;z-index:999;padding:1rem;}
+.confirm-overlay.show{display:flex;}
+.confirm-sheet{background:var(--surface);border-radius:var(--radius-xl) var(--radius-xl) var(--radius) var(--radius);padding:1.5rem;width:100%;max-width:440px;box-shadow:var(--shadow-md);}
+.confirm-title{font-size:17px;font-weight:600;margin-bottom:0.5rem;}
+.confirm-detail{background:var(--surface2);border-radius:var(--radius);padding:1rem;margin:1rem 0;display:flex;flex-direction:column;gap:8px;}
+.confirm-row{display:flex;justify-content:space-between;font-size:14px;}
+.confirm-row .cl{color:var(--text2);}
+.confirm-row .cr{font-weight:500;font-family:var(--mono);font-size:13px;}
+.confirm-actions{display:flex;gap:10px;margin-top:1rem;}
+.confirm-actions .btn{flex:1;}
+
+/* SUCCESS */
+.success-screen{text-align:center;padding:3rem 1.5rem;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.success-icon{width:64px;height:64px;border-radius:50%;background:var(--success-bg);border:2px solid var(--success-border);display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;font-size:28px;}
+.success-title{font-size:20px;font-weight:600;color:var(--success);margin-bottom:8px;}
+.success-msg{font-size:14px;color:var(--text2);max-width:280px;line-height:1.6;}
+
+/* PRODUCT FOUND */
+.product-pill{display:none;background:var(--info-bg);border:1px solid var(--info-border);border-radius:var(--radius);padding:1rem;margin-bottom:1rem;}
+.product-pill .pf-label{font-size:11px;font-weight:600;color:var(--info);letter-spacing:0.05em;text-transform:uppercase;margin-bottom:8px;}
+.pf-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 16px;}
+.pf-item{display:flex;flex-direction:column;gap:1px;}
+.pf-item .pk{font-size:11px;color:var(--text3);}
+.pf-item .pv{font-size:14px;font-weight:500;color:var(--text);}
+
+/* OUT OF STOCK */
+.out-of-stock-banner{display:none;background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:var(--radius);padding:1rem;text-align:center;font-weight:600;color:var(--danger);font-size:15px;}
+
+/* LOW STOCK ROW */
+.low-stock-row{background:var(--warn-bg);}
+.empty-row{background:var(--danger-bg);}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:1rem 0;}
+
+/* THEME TOGGLE */
+.theme-toggle{width:36px;height:36px;border-radius:var(--radius);border:1.5px solid var(--border-strong);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:all var(--transition);}
+.theme-toggle:hover{background:var(--surface2);}
+
+/* LOW STOCK ALERT BADGE */
+.alert-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#ef4444;margin-left:4px;vertical-align:middle;}
+
+/* MONO SERIAL */
+.mono{font-family:var(--mono);font-size:12px;color:var(--text2);}
+
+/* AVATAR */
+.avatar{width:32px;height:32px;border-radius:50%;background:var(--brand-light);color:var(--brand-text);font-weight:700;font-size:13px;display:inline-flex;align-items:center;justify-content:center;}
+
+/* REPORT TABLE */
+.report-section{margin-bottom:1.5rem;}
+.report-section h3{font-size:14px;font-weight:600;color:var(--text2);margin-bottom:0.75rem;letter-spacing:0.03em;text-transform:uppercase;}
+
+/* MOBILE SAFE AREA */
+@media(max-width:480px){
+  .content{padding:1rem;}
+  .topbar{padding:0.85rem 1rem;}
+  .confirm-overlay{align-items:flex-end;}
+}
+
+/* SCROLL SMOOTH */
+.tabs::-webkit-scrollbar{display:none;}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN ═══════════════ -->
+<div id="screen-login" class="screen active">
+  <div class="login-wrap">
+    <div style="position:absolute;top:1rem;right:1rem;">
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">☀</button>
+    </div>
+    <div class="login-card">
+      <div class="login-logo">
+        <div class="wordmark">GEGRA</div>
+        <div class="tagline">Inventory Management System</div>
+      </div>
+      <div class="card section-gap">
+        <div class="alert alert-err" id="login-err">Incorrect username or password.</div>
+        <div class="field">
+          <label>Username</label>
+          <input type="text" id="l-user" placeholder="Enter your username" autocomplete="username">
+        </div>
+        <div class="field">
+          <label>Password</label>
+          <input type="password" id="l-pass" placeholder="Enter your password" autocomplete="current-password">
+        </div>
+        <button class="btn btn-primary btn-full" onclick="doLogin()" style="margin-top:4px;">Login</button>
+      </div>
+      <p style="text-align:center;font-size:12px;color:var(--text3);margin-top:1.25rem;">Contact your admin if you forgot your credentials.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ TECHNICIAN ═══════════════ -->
+<div id="screen-tech" class="screen">
+  <div class="topbar">
+    <div>
+      <div class="topbar-logo">GEGRA</div>
+      <div class="topbar-sub" id="tech-name-display">Technician</div>
+    </div>
+    <div class="topbar-right">
+      <button class="theme-toggle" onclick="toggleTheme()">☀</button>
+      <button class="btn btn-sm" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="content" id="tech-form-area">
+    <div class="card section-gap">
+      <div class="card-title">Check out a part</div>
+      <div class="alert alert-err" id="tech-err"></div>
+
+      <div class="field">
+        <label>Part serial number</label>
+        <div style="display:flex;gap:8px;">
+          <input type="text" id="t-serial" placeholder="Type or scan serial — e.g. GG-001" oninput="lookupSerial(this.value)" style="flex:1;font-family:var(--mono);">
+          <button class="btn btn-sm" onclick="lookupSerial(document.getElementById('t-serial').value)">Look up</button>
+        </div>
+      </div>
+
+      <div class="out-of-stock-banner" id="out-banner">⊘ Out of stock — this part is currently unavailable</div>
+      <div class="product-pill" id="product-pill">
+        <div class="pf-label">Part found</div>
+        <div class="pf-grid">
+          <div class="pf-item"><span class="pk">Name</span><span class="pv" id="pf-name">—</span></div>
+          <div class="pf-item"><span class="pk">Category</span><span class="pv" id="pf-cat">—</span></div>
+          <div class="pf-item"><span class="pk">Description</span><span class="pv" id="pf-desc">—</span></div>
+          <div class="pf-item"><span class="pk">Price</span><span class="pv" id="pf-price">—</span></div>
+        </div>
+      </div>
+
+      <div id="tech-extra" style="display:none;" class="section-gap">
+        <div class="g2">
+          <div class="field">
+            <label>Quantity</label>
+            <input type="number" id="t-qty" value="1" min="1">
+          </div>
+          <div class="field">
+            <label>Action</label>
+            <select id="t-dir">
+              <option value="OUT">Taking out</option>
+              <option value="RETURN">Returning</option>
+            </select>
+          </div>
+        </div>
+        <div class="g2">
+          <div class="field">
+            <label>Customer number</label>
+            <input type="text" id="t-custno" placeholder="e.g. C-001">
+          </div>
+          <div class="field">
+            <label>Customer name</label>
+            <input type="text" id="t-custname" placeholder="Full name">
+          </div>
+        </div>
+        <div class="field">
+          <label>Customer address</label>
+          <textarea id="t-address" placeholder="Full address — street, city, pin code…" style="min-height:56px;"></textarea>
+        </div>
+        <div class="field">
+          <label>Warranty status</label>
+          <select id="t-warranty">
+            <option value="In warranty">In warranty</option>
+            <option value="Out of warranty">Out of warranty</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Reason / notes</label>
+          <textarea id="t-reason" placeholder="Describe the purpose of this part…"></textarea>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="techReview()">Review & confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="success-screen" id="tech-success" style="display:none;">
+    <div class="success-icon">✓</div>
+    <div class="success-title">Entry submitted!</div>
+    <p class="success-msg" id="tech-success-msg">Part logged successfully.</p>
+    <button class="btn btn-primary" style="margin-top:1.5rem;" onclick="resetTech()">Submit another</button>
+  </div>
+</div>
+
+<!-- ═══════════════ ADMIN ═══════════════ -->
+<div id="screen-admin" class="screen">
+  <div class="topbar">
+    <div>
+      <div class="topbar-logo">GEGRA <span style="font-size:12px;font-weight:400;color:var(--text2);">Admin</span></div>
+    </div>
+    <div class="topbar-right">
+      <button class="theme-toggle" onclick="toggleTheme()">☀</button>
+      <button class="btn btn-sm" onclick="logout()">Logout</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" onclick="adminTab('dashboard',this)">Dashboard</button>
+    <button class="tab" onclick="adminTab('log',this)">Transaction log</button>
+    <button class="tab" onclick="adminTab('stock',this)">Stock</button>
+    <button class="tab" onclick="adminTab('users',this)">Technicians</button>
+    <button class="tab" onclick="adminTab('addstock',this)">Add stock</button>
+    <button class="tab" onclick="adminTab('categories',this)">Categories</button>
+    <button class="tab" onclick="adminTab('reports',this)">Reports</button>
+    <button class="tab" onclick="adminTab('settings',this)">Settings</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="atab-dashboard" class="content section-gap">
+    <div class="g4">
+      <div class="stat"><div class="lbl">Total parts</div><div class="val" id="s-parts">0</div></div>
+      <div class="stat"><div class="lbl">Total qty</div><div class="val" id="s-qty">0</div></div>
+      <div class="stat"><div class="lbl">Out today</div><div class="val" style="color:var(--danger);" id="s-out">0</div></div>
+      <div class="stat"><div class="lbl">Low stock <span class="alert-dot" id="low-dot" style="display:none;"></span></div><div class="val" style="color:var(--warn);" id="s-low">0</div></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Recent transactions</div>
+      <div id="recent-list"><p style="font-size:14px;color:var(--text2);">No transactions yet.</p></div>
+    </div>
+    <div class="card" id="low-stock-card" style="display:none;">
+      <div class="card-title" style="color:var(--warn);">⚠ Low stock alerts</div>
+      <div id="low-stock-list"></div>
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div id="atab-log" class="content section-gap" style="display:none;">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <input type="text" id="log-search" placeholder="Search by part, technician, customer, serial…" oninput="renderLog()" style="flex:1;min-width:200px;padding:9px 13px;border:1.5px solid var(--border-strong);border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:14px;outline:none;">
+      <select id="log-filter" onchange="renderLog()" style="padding:9px 36px 9px 13px;border:1.5px solid var(--border-strong);border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:14px;outline:none;appearance:none;background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 12px center;">
+        <option value="">All actions</option>
+        <option value="OUT">Out</option>
+        <option value="RETURN">Returns</option>
+      </select>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Date & Time</th><th>Serial</th><th>Part name</th><th>Category</th><th>Qty</th><th>Action</th><th>Warranty</th><th>Technician</th><th>Cust #</th><th>Customer</th><th>Address</th><th>Reason</th></tr></thead>
+        <tbody id="log-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- STOCK -->
+  <div id="atab-stock" class="content section-gap" style="display:none;">
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Serial</th><th>Part name</th><th>Category</th><th>Description</th><th>Price</th><th>Qty available</th><th>Status</th><th>Edit qty</th><th>Remove</th></tr></thead>
+        <tbody id="stock-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- USERS -->
+  <div id="atab-users" class="content section-gap" style="display:none;">
+    <div class="card section-gap">
+      <div class="card-title">Add new technician</div>
+      <div class="g3">
+        <div class="field"><label>Full name</label><input type="text" id="u-name" placeholder="e.g. Ravi Kumar"></div>
+        <div class="field"><label>Username</label><input type="text" id="u-user" placeholder="e.g. ravi.k"></div>
+        <div class="field"><label>Password</label><input type="password" id="u-pass" placeholder="Set a password"></div>
+      </div>
+      <div class="alert alert-err" id="user-err"></div>
+      <div class="alert alert-ok" id="user-ok"></div>
+      <button class="btn btn-primary" onclick="addUser()">Add technician</button>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Transactions</th><th>Action</th></tr></thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ADD STOCK -->
+  <div id="atab-addstock" class="content section-gap" style="display:none;">
+
+    <!-- EXCEL IMPORT -->
+    <div class="card section-gap">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+        <div>
+          <div class="card-title" style="margin-bottom:4px;">Import from Excel</div>
+          <p style="font-size:13px;color:var(--text2);">Upload your filled GEGRA template (.xlsx) to import all parts at once.</p>
+        </div>
+        <a href="GEGRA_Inventory_Template.xlsx" download style="text-decoration:none;">
+          <button class="btn btn-sm" type="button">⬇ Download template</button>
+        </a>
+      </div>
+      <div id="drop-zone" style="border:2px dashed var(--border-strong);border-radius:var(--radius-lg);padding:2rem;text-align:center;cursor:pointer;transition:all var(--transition);background:var(--surface2);" onclick="document.getElementById('xlsx-input').click()" ondragover="event.preventDefault();this.style.borderColor='var(--brand)'" ondragleave="this.style.borderColor='var(--border-strong)'" ondrop="handleDrop(event)">
+        <div style="font-size:28px;margin-bottom:8px;">📂</div>
+        <p style="font-size:14px;font-weight:500;color:var(--text);">Drop your Excel file here</p>
+        <p style="font-size:13px;color:var(--text2);margin-top:4px;">or click to browse</p>
+        <input type="file" id="xlsx-input" accept=".xlsx" style="display:none;" onchange="handleXlsx(this.files[0])">
+      </div>
+      <div class="alert alert-err" id="import-err"></div>
+      <div class="alert alert-ok" id="import-ok"></div>
+      <div id="import-preview" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+          <p style="font-size:14px;font-weight:600;" id="import-count">0 parts ready to import</p>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-sm" onclick="cancelImport()">Cancel</button>
+            <button class="btn btn-primary btn-sm" onclick="confirmImport()">Import all</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>Serial</th><th>Part name</th><th>Category</th><th>Description</th><th>Price</th><th>Qty</th><th>Status</th></tr></thead>
+            <tbody id="import-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MANUAL ADD -->
+    <div class="card section-gap">
+      <div class="card-title">Or add a single part manually</div>
+      <div class="g2">
+        <div class="field"><label>Part name</label><input type="text" id="ns-name" placeholder="e.g. HP Ink Cartridge 680"></div>
+        <div class="field"><label>Part serial</label><input type="text" id="ns-serial" placeholder="e.g. GG-008" style="font-family:var(--mono);text-transform:uppercase;"></div>
+      </div>
+      <div class="g3">
+        <div class="field"><label>Category</label>
+          <select id="ns-cat"></select>
+        </div>
+        <div class="field"><label>Price (₹)</label><input type="number" id="ns-price" placeholder="0.00" min="0" step="0.01"></div>
+        <div class="field"><label>Quantity</label><input type="number" id="ns-qty" placeholder="e.g. 10" min="1"></div>
+      </div>
+      <div class="field"><label>Description</label><input type="text" id="ns-desc" placeholder="Short description of the part"></div>
+      <div class="alert alert-err" id="stock-err"></div>
+      <div class="alert alert-ok" id="stock-ok"></div>
+      <button class="btn btn-primary" onclick="addStock()">Add to inventory</button>
+    </div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div id="atab-categories" class="content section-gap" style="display:none;">
+    <div class="card section-gap">
+      <div class="card-title">Manage categories</div>
+      <p style="font-size:13px;color:var(--text2);">These categories appear in the Add Stock form and the technician serial lookup. Add your own, edit names, or remove ones you don't need.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <input type="text" id="cat-input" placeholder="e.g. Networking, Printer Parts…" style="flex:1;min-width:180px;padding:9px 13px;border:1.5px solid var(--border-strong);border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:14px;outline:none;" onkeydown="if(event.key==='Enter')addCategory()">
+        <button class="btn btn-primary" onclick="addCategory()">Add category</button>
+      </div>
+      <div class="alert alert-err" id="cat-err"></div>
+      <div class="alert alert-ok" id="cat-ok"></div>
+    </div>
+    <div class="tbl-wrap">
+      <table class="tbl">
+        <thead><tr><th>#</th><th>Category name</th><th>Parts using this</th><th>Edit</th><th>Remove</th></tr></thead>
+        <tbody id="cat-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- REPORTS -->
+  <div id="atab-reports" class="content section-gap" style="display:none;">
+    <div class="g2">
+      <div class="stat"><div class="lbl">Total value in stock</div><div class="val" id="r-value">₹0</div></div>
+      <div class="stat"><div class="lbl">Total transactions</div><div class="val" id="r-total">0</div></div>
+    </div>
+    <div class="card report-section">
+      <div class="card-title">Top technicians by activity</div>
+      <div id="r-tech-list"><p style="font-size:14px;color:var(--text2);">No data yet.</p></div>
+    </div>
+    <div class="card report-section">
+      <div class="card-title">Most used parts</div>
+      <div id="r-parts-list"><p style="font-size:14px;color:var(--text2);">No data yet.</p></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div id="atab-settings" class="content section-gap" style="display:none;">
+    <div class="card section-gap">
+      <div class="card-title">Low stock alert threshold</div>
+      <p style="font-size:14px;color:var(--text2);">Alert me when any part's quantity drops to or below this number.</p>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div class="field" style="max-width:120px;">
+          <label>Threshold</label>
+          <input type="number" id="threshold-val" value="5" min="1">
+        </div>
+        <button class="btn btn-primary" onclick="saveThreshold()" style="margin-top:20px;">Save</button>
+      </div>
+      <div class="alert alert-ok" id="threshold-ok"></div>
+    </div>
+    <div class="card section-gap">
+      <div class="card-title">Change admin password</div>
+      <div class="g2">
+        <div class="field"><label>New password</label><input type="password" id="pw-new" placeholder="New password"></div>
+        <div class="field"><label>Confirm password</label><input type="password" id="pw-confirm" placeholder="Confirm password"></div>
+      </div>
+      <div class="alert alert-err" id="pw-err"></div>
+      <div class="alert alert-ok" id="pw-ok"></div>
+      <button class="btn btn-primary" onclick="changePassword()">Update password</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM OVERLAY -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-sheet">
+    <div class="confirm-title">Confirm entry</div>
+    <p style="font-size:14px;color:var(--text2);">Please review before submitting.</p>
+    <div class="confirm-detail">
+      <div class="confirm-row"><span class="cl">Part</span><span class="cr" id="c-name">—</span></div>
+      <div class="confirm-row"><span class="cl">Serial</span><span class="cr" id="c-serial">—</span></div>
+      <div class="confirm-row"><span class="cl">Quantity</span><span class="cr" id="c-qty">—</span></div>
+      <div class="confirm-row"><span class="cl">Action</span><span class="cr" id="c-dir">—</span></div>
+      <div class="confirm-row"><span class="cl">Customer</span><span class="cr" id="c-cust">—</span></div>
+      <div class="confirm-row"><span class="cl">Address</span><span class="cr" id="c-address" style="max-width:200px;text-align:right;white-space:normal;line-height:1.4;">—</span></div>
+      <div class="confirm-row"><span class="cl">Warranty</span><span class="cr" id="c-warranty">—</span></div>
+      <div class="confirm-row"><span class="cl">Reason</span><span class="cr" id="c-reason">—</span></div>
+    </div>
+    <div class="confirm-actions">
+      <button class="btn" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-primary" onclick="techSubmit()">Confirm & submit</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════ DATA ═══════════
+let theme = localStorage.getItem('gegra-theme') || 'light';
+document.documentElement.setAttribute('data-theme', theme);
+updateThemeIcon();
+
+let lowThreshold = parseInt(localStorage.getItem('gegra-threshold') || '5');
+let currentUser = null;
+let today = () => new Date().toLocaleDateString('en-IN');
+let nowStr = () => new Date().toLocaleString('en-IN', {hour12:true,hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short'});
+
+let users = [
+  {name:'Admin', username:'admin', password:'admin123', role:'admin'},
+  {name:'Ravi Kumar', username:'ravi.k', password:'tech123', role:'tech'},
+  {name:'Sara Ahmed', username:'sara.a', password:'tech456', role:'tech'},
+];
+
+let categories = ['Electronics', 'Spare Part', 'Accessory', 'Consumable', 'Tool', 'Other'];
+
+
+  {serial:'GG-001', name:'HP Ink Cartridge 680', category:'Consumable', desc:'Black ink, HP DeskJet', price:850, qty:15},
+  {serial:'GG-002', name:'USB-C Cable 2m', category:'Accessory', desc:'Fast charge, braided', price:350, qty:8},
+  {serial:'GG-003', name:'Thermal Paste Arctic MX-4', category:'Spare Part', desc:'4g tube', price:280, qty:20},
+  {serial:'GG-004', name:'DDR4 RAM 8GB', category:'Electronics', desc:'2666MHz, Kingston', price:2200, qty:5},
+  {serial:'GG-005', name:'HDMI Cable 1.5m', category:'Accessory', desc:'4K UHD support', price:420, qty:3},
+  {serial:'GG-006', name:'Laptop Cooling Fan', category:'Spare Part', desc:'Universal 60mm', price:650, qty:0},
+  {serial:'GG-007', name:'Precision Screwdriver Set', category:'Tool', desc:'12-piece', price:480, qty:4},
+];
+
+let transactions = [];
+let pendingEntry = null;
+
+// ═══════════ THEME ═══════════
+function toggleTheme() {
+  theme = theme === 'light' ? 'dark' : 'light';
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('gegra-theme', theme);
+  updateThemeIcon();
+}
+function updateThemeIcon() {
+  document.querySelectorAll('.theme-toggle').forEach(b => b.textContent = theme === 'dark' ? '☀' : '🌙');
+}
+
+// ═══════════ SCREENS ═══════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function showAlert(id, msg, type) {
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.className = 'alert alert-' + type;
+  el.textContent = msg;
+  el.style.display = 'block';
+  if(type === 'ok') setTimeout(() => el.style.display = 'none', 3000);
+}
+
+// ═══════════ LOGIN ═══════════
+function doLogin() {
+  const u = document.getElementById('l-user').value.trim();
+  const p = document.getElementById('l-pass').value;
+  const user = users.find(x => x.username === u && x.password === p);
+  const err = document.getElementById('login-err');
+  if(!user) { err.style.display = 'block'; return; }
+  err.style.display = 'none';
+  currentUser = user;
+  if(user.role === 'admin') { showScreen('screen-admin'); refreshAdmin(); populateCategorySelects(); }
+  else { showScreen('screen-tech'); document.getElementById('tech-name-display').textContent = user.name; resetTech(); }
+}
+function logout() {
+  currentUser = null;
+  document.getElementById('l-user').value = '';
+  document.getElementById('l-pass').value = '';
+  showScreen('screen-login');
+}
+document.getElementById('l-pass').addEventListener('keydown', e => { if(e.key === 'Enter') doLogin(); });
+document.getElementById('l-user').addEventListener('keydown', e => { if(e.key === 'Enter') document.getElementById('l-pass').focus(); });
+
+// ═══════════ TECHNICIAN ═══════════
+function lookupSerial(raw) {
+  const val = (raw || '').trim().toUpperCase();
+  const pill = document.getElementById('product-pill');
+  const extra = document.getElementById('tech-extra');
+  const outBanner = document.getElementById('out-banner');
+  const err = document.getElementById('tech-err');
+  err.style.display = 'none';
+  pill.style.display = 'none';
+  outBanner.style.display = 'none';
+  extra.style.display = 'none';
+  if(!val || val.length < 3) return;
+  const p = inventory.find(x => x.serial === val);
+  if(p) {
+    document.getElementById('pf-name').textContent = p.name;
+    document.getElementById('pf-cat').textContent = p.category;
+    document.getElementById('pf-desc').textContent = p.desc;
+    document.getElementById('pf-price').textContent = '₹' + p.price.toLocaleString('en-IN');
+    pill.style.display = 'block';
+    if(p.qty === 0) { outBanner.style.display = 'block'; }
+    else { extra.style.display = 'flex'; }
+  } else {
+    if(val.length >= 4) { err.textContent = 'No part found with this serial number.'; err.style.display = 'block'; }
+  }
+}
+
+function techReview() {
+  const serial = document.getElementById('t-serial').value.trim().toUpperCase();
+  const qty = parseInt(document.getElementById('t-qty').value) || 1;
+  const dir = document.getElementById('t-dir').value;
+  const custno = document.getElementById('t-custno').value.trim();
+  const custname = document.getElementById('t-custname').value.trim();
+  const address = document.getElementById('t-address').value.trim();
+  const warranty = document.getElementById('t-warranty').value;
+  const reason = document.getElementById('t-reason').value.trim();
+  const err = document.getElementById('tech-err');
+  const p = inventory.find(x => x.serial === serial);
+
+  if(!p) { err.textContent = 'Invalid serial.'; err.style.display = 'block'; return; }
+  if(!custno && !custname) { err.textContent = 'Please enter at least a customer number or name.'; err.style.display = 'block'; return; }
+  if(!reason) { err.textContent = 'Please enter a reason.'; err.style.display = 'block'; return; }
+  if(dir === 'OUT' && qty > p.qty) { err.textContent = 'Requested qty exceeds available stock (' + p.qty + ' left).'; err.style.display = 'block'; return; }
+  err.style.display = 'none';
+
+  pendingEntry = {serial, qty, dir, custno: custno||'—', custname: custname||'—', address: address||'—', warranty, reason, p};
+  document.getElementById('c-name').textContent = p.name;
+  document.getElementById('c-serial').textContent = serial;
+  document.getElementById('c-qty').textContent = qty;
+  document.getElementById('c-dir').textContent = dir === 'OUT' ? 'Taking out' : 'Returning';
+  document.getElementById('c-cust').textContent = (custno||'—') + ' · ' + (custname||'—');
+  document.getElementById('c-address').textContent = address || '—';
+  document.getElementById('c-warranty').textContent = warranty;
+  document.getElementById('c-reason').textContent = reason;
+  document.getElementById('confirm-overlay').classList.add('show');
+}
+
+function closeConfirm() {
+  document.getElementById('confirm-overlay').classList.remove('show');
+}
+
+function techSubmit() {
+  closeConfirm();
+  if(!pendingEntry) return;
+  const {serial, qty, dir, custno, custname, address, warranty, reason, p} = pendingEntry;
+  if(dir === 'OUT') p.qty = Math.max(0, p.qty - qty);
+  else p.qty += qty;
+
+  transactions.unshift({
+    datetime: nowStr(), serial, name: p.name, category: p.category,
+    qty, direction: dir, tech: currentUser.name,
+    custno, custname, address, warranty, reason
+  });
+  pendingEntry = null;
+
+  document.getElementById('tech-success-msg').textContent =
+    `${dir === 'OUT' ? 'Checked out' : 'Returned'} ${qty}× ${p.name}. Stock updated.`;
+  document.getElementById('tech-form-area').style.display = 'none';
+  document.getElementById('tech-success').style.display = 'flex';
+}
+
+function resetTech() {
+  ['t-serial','t-custno','t-custname','t-address','t-reason'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('t-qty').value = 1;
+  document.getElementById('t-dir').value = 'OUT';
+  document.getElementById('t-warranty').value = 'In warranty';
+  document.getElementById('product-pill').style.display = 'none';
+  document.getElementById('out-banner').style.display = 'none';
+  document.getElementById('tech-extra').style.display = 'none';
+  document.getElementById('tech-err').style.display = 'none';
+  document.getElementById('tech-form-area').style.display = 'block';
+  document.getElementById('tech-success').style.display = 'none';
+}
+
+// ═══════════ ADMIN ═══════════
+function adminTab(name, btn) {
+  ['dashboard','log','stock','users','addstock','categories','reports','settings'].forEach(t => {
+    document.getElementById('atab-' + t).style.display = t === name ? 'block' : 'none';
+  });
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if(name === 'log') renderLog();
+  if(name === 'stock') renderStock();
+  if(name === 'users') renderUsers();
+  if(name === 'dashboard') refreshAdmin();
+  if(name === 'reports') renderReports();
+  if(name === 'categories') renderCategories();
+  if(name === 'addstock') populateCategorySelects();
+  if(name === 'settings') document.getElementById('threshold-val').value = lowThreshold;
+}
+
+function refreshAdmin() { updateStats(); renderRecent(); renderLowStock(); }
+
+function updateStats() {
+  const lowItems = inventory.filter(p => p.qty <= lowThreshold && p.qty > 0);
+  const emptyItems = inventory.filter(p => p.qty === 0);
+  document.getElementById('s-parts').textContent = inventory.length;
+  document.getElementById('s-qty').textContent = inventory.reduce((a, p) => a + p.qty, 0).toLocaleString('en-IN');
+  const todayStr = today();
+  const todayOut = transactions.filter(t => t.datetime.includes(todayStr) && t.direction === 'OUT').reduce((a, t) => a + t.qty, 0);
+  document.getElementById('s-out').textContent = todayOut;
+  const alertCount = lowItems.length + emptyItems.length;
+  document.getElementById('s-low').textContent = alertCount;
+  document.getElementById('low-dot').style.display = alertCount > 0 ? 'inline-block' : 'none';
+}
+
+function renderRecent() {
+  const el = document.getElementById('recent-list');
+  if(!transactions.length) { el.innerHTML = '<p style="font-size:14px;color:var(--text2);">No transactions yet.</p>'; return; }
+  el.innerHTML = transactions.slice(0, 8).map(t => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+      <div>
+        <span style="font-size:14px;font-weight:500;">${t.name}</span>
+        <span class="mono" style="margin-left:8px;">${t.serial}</span>
+        <span style="font-size:12px;color:var(--text2);margin-left:6px;">× ${t.qty}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;">
+        <span style="font-size:12px;color:var(--text2);">${t.tech} · ${t.datetime}</span>
+        <span class="badge ${t.warranty === 'In warranty' ? 'badge-ok' : t.warranty === 'Out of warranty' ? 'badge-low' : ''}" style="font-size:10px;">${t.warranty||''}</span>
+        <span class="badge badge-${t.direction.toLowerCase()}">${t.direction}</span>
+      </div>
+    </div>`).join('');
+}
+
+function renderLowStock() {
+  const low = inventory.filter(p => p.qty <= lowThreshold);
+  const card = document.getElementById('low-stock-card');
+  const list = document.getElementById('low-stock-list');
+  if(!low.length) { card.style.display = 'none'; return; }
+  card.style.display = 'block';
+  list.innerHTML = low.map(p => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);">
+      <div><span style="font-size:14px;font-weight:500;">${p.name}</span><span class="mono" style="margin-left:8px;">${p.serial}</span></div>
+      <span class="badge ${p.qty === 0 ? 'badge-empty' : 'badge-low'}">${p.qty === 0 ? 'Out of stock' : p.qty + ' left'}</span>
+    </div>`).join('');
+}
+
+function renderLog() {
+  const q = (document.getElementById('log-search').value || '').toLowerCase();
+  const f = document.getElementById('log-filter').value;
+  const rows = transactions.filter(t => {
+    const match = Object.values(t).some(v => String(v).toLowerCase().includes(q));
+    return match && (!f || t.direction === f);
+  });
+  const tbody = document.getElementById('log-tbody');
+  if(!rows.length) { tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:2rem;color:var(--text2);">No entries found.</td></tr>'; return; }
+  tbody.innerHTML = rows.map(t => `<tr>
+    <td>${t.datetime}</td>
+    <td class="mono">${t.serial}</td>
+    <td style="font-weight:500;">${t.name}</td>
+    <td>${t.category}</td>
+    <td style="font-weight:600;">${t.qty}</td>
+    <td><span class="badge badge-${t.direction.toLowerCase()}">${t.direction}</span></td>
+    <td><span class="badge ${t.warranty === 'In warranty' ? 'badge-ok' : 'badge-low'}">${t.warranty||'—'}</span></td>
+    <td>${t.tech}</td>
+    <td class="mono">${t.custno}</td>
+    <td>${t.custname}</td>
+    <td title="${t.address||''}" style="max-width:140px;">${t.address||'—'}</td>
+    <td title="${t.reason}">${t.reason}</td>
+  </tr>`).join('');
+}
+
+function renderStock() {
+  document.getElementById('stock-tbody').innerHTML = inventory.map((p, i) => {
+    const statusClass = p.qty === 0 ? 'badge-empty' : p.qty <= lowThreshold ? 'badge-low' : 'badge-ok';
+    const statusLabel = p.qty === 0 ? 'Out of stock' : p.qty <= lowThreshold ? 'Low stock' : 'In stock';
+    const rowClass = p.qty === 0 ? 'class="empty-row"' : p.qty <= lowThreshold ? 'class="low-stock-row"' : '';
+    return `<tr ${rowClass}>
+      <td class="mono">${p.serial}</td>
+      <td style="font-weight:500;">${p.name}</td>
+      <td>${p.category}</td>
+      <td style="color:var(--text2);font-size:13px;">${p.desc}</td>
+      <td style="font-weight:500;">₹${p.price.toLocaleString('en-IN')}</td>
+      <td style="font-weight:700;">${p.qty}</td>
+      <td><span class="badge ${statusClass}">${statusLabel}</span></td>
+      <td>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <button class="btn btn-sm" onclick="editQty(${i},-1)" style="padding:3px 10px;font-weight:700;">−</button>
+          <span style="min-width:20px;text-align:center;font-weight:600;">${p.qty}</span>
+          <button class="btn btn-sm" onclick="editQty(${i},1)" style="padding:3px 10px;font-weight:700;">+</button>
+        </div>
+      </td>
+      <td><button class="btn btn-sm btn-danger" onclick="deleteStock(${i})">Remove</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function deleteStock(i) {
+  const part = inventory[i];
+  if(!confirm(`Remove "${part.name}" (${part.serial}) from inventory?\n\nThis cannot be undone.`)) return;
+  inventory.splice(i, 1);
+  renderStock();
+  updateStats();
+  showAlert('stock-ok', `"${part.name}" removed from inventory.`, 'ok');
+}
+
+// ═══════════ EXCEL IMPORT ═══════════
+let importBuffer = [];
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('drop-zone').style.borderColor = 'var(--border-strong)';
+  const file = e.dataTransfer.files[0];
+  if(file) handleXlsx(file);
+}
+
+function handleXlsx(file) {
+  if(!file || !file.name.endsWith('.xlsx')) {
+    showAlert('import-err', 'Please upload a valid .xlsx Excel file.', 'err');
+    document.getElementById('import-err').style.display = 'block';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const data = new Uint8Array(e.target.result);
+      const wb = XLSX.read(data, {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {defval:''});
+
+      // Find header row — look for "Part Serial" key
+      const parsed = [];
+      const skipped = [];
+      const existingSerials = new Set(inventory.map(p => p.serial.toUpperCase()));
+
+      rows.forEach((row, idx) => {
+        const serial = String(row['Part Serial'] || row['PART SERIAL'] || '').trim().toUpperCase();
+        const name = String(row['Part Name'] || row['PART NAME'] || '').trim();
+        const category = String(row['Part Category'] || row['PART CATEGORY'] || 'Other').trim();
+        // auto-add new category if not in list
+        if(category && !categories.find(c=>c.toLowerCase()===category.toLowerCase())) {
+          categories.push(category);
+        }
+        const desc = String(row['Part Description'] || row['PART DESCRIPTION'] || '—').trim();
+        const price = parseFloat(row['Price (₹)'] || row['Price'] || row['PRICE'] || 0) || 0;
+        const qty = parseInt(row['Quantity'] || row['QTY'] || row['QUANTITY'] || 0) || 0;
+
+        if(!serial || !name) return;
+        if(existingSerials.has(serial)) { skipped.push(serial); return; }
+        parsed.push({serial, name, category, desc, price, qty, _status: 'new'});
+        existingSerials.add(serial);
+      });
+
+      if(!parsed.length && !skipped.length) {
+        showAlert('import-err', 'No valid rows found. Make sure you are using the GEGRA template with correct headers.', 'err');
+        document.getElementById('import-err').style.display = 'block';
+        return;
+      }
+
+      importBuffer = parsed;
+      document.getElementById('import-err').style.display = 'none';
+      document.getElementById('import-ok').style.display = 'none';
+
+      document.getElementById('import-count').textContent =
+        `${parsed.length} part${parsed.length!==1?'s':''} ready to import` +
+        (skipped.length ? ` · ${skipped.length} skipped (serial already exists)` : '');
+
+      document.getElementById('import-tbody').innerHTML = parsed.map(p => `<tr>
+        <td class="mono">${p.serial}</td>
+        <td style="font-weight:500;">${p.name}</td>
+        <td>${p.category}</td>
+        <td style="color:var(--text2);font-size:12px;">${p.desc}</td>
+        <td>₹${p.price.toLocaleString('en-IN')}</td>
+        <td style="font-weight:600;">${p.qty}</td>
+        <td><span class="badge badge-ok">New</span></td>
+      </tr>`).join('') + (skipped.length ? skipped.map(s => `<tr style="opacity:0.5;">
+        <td class="mono">${s}</td>
+        <td colspan="5" style="color:var(--text2);font-size:13px;">Skipped — serial already in inventory</td>
+        <td><span class="badge" style="background:var(--surface2);color:var(--text2);">Skip</span></td>
+      </tr>`).join('') : '');
+
+      document.getElementById('import-preview').style.display = 'block';
+    } catch(err) {
+      showAlert('import-err', 'Could not read file. Make sure it is a valid .xlsx file.', 'err');
+      document.getElementById('import-err').style.display = 'block';
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function confirmImport() {
+  if(!importBuffer.length) return;
+  importBuffer.forEach(p => inventory.push({serial:p.serial, name:p.name, category:p.category, desc:p.desc, price:p.price, qty:p.qty}));
+  const count = importBuffer.length;
+  importBuffer = [];
+  document.getElementById('import-preview').style.display = 'none';
+  document.getElementById('xlsx-input').value = '';
+  showAlert('import-ok', `${count} part${count!==1?'s':''} imported successfully into inventory.`, 'ok');
+  document.getElementById('import-ok').style.display = 'block';
+  updateStats();
+}
+
+function cancelImport() {
+  importBuffer = [];
+  document.getElementById('import-preview').style.display = 'none';
+  document.getElementById('xlsx-input').value = '';
+}
+
+function editQty(i, delta) {
+  inventory[i].qty = Math.max(0, inventory[i].qty + delta);
+  renderStock();
+  updateStats();
+}
+
+function renderUsers() {
+  document.getElementById('users-tbody').innerHTML = users.map((u, i) => {
+    const txCount = transactions.filter(t => t.tech === u.name).length;
+    return `<tr>
+      <td><div style="display:flex;align-items:center;gap:8px;"><div class="avatar">${u.name.split(' ').map(n=>n[0]).join('').slice(0,2)}</div>${u.name}</div></td>
+      <td class="mono">${u.username}</td>
+      <td><span class="badge badge-${u.role}">${u.role}</span></td>
+      <td>${txCount}</td>
+      <td>${u.role !== 'admin' ? `<button class="btn btn-sm btn-danger" onclick="removeUser(${i})">Remove</button>` : '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function addUser() {
+  const name = document.getElementById('u-name').value.trim();
+  const username = document.getElementById('u-user').value.trim();
+  const password = document.getElementById('u-pass').value;
+  if(!name || !username || !password) { showAlert('user-err', 'All fields are required.', 'err'); return; }
+  if(users.find(u => u.username === username)) { showAlert('user-err', 'Username already exists.', 'err'); return; }
+  users.push({name, username, password, role:'tech'});
+  document.getElementById('u-name').value = '';
+  document.getElementById('u-user').value = '';
+  document.getElementById('u-pass').value = '';
+  showAlert('user-ok', `"${name}" has been added as a technician.`, 'ok');
+  renderUsers();
+}
+
+function removeUser(i) {
+  if(!confirm('Remove ' + users[i].name + '? This cannot be undone.')) return;
+  users.splice(i, 1);
+  renderUsers();
+}
+
+function addStock() {
+  const name = document.getElementById('ns-name').value.trim();
+  const serial = document.getElementById('ns-serial').value.trim().toUpperCase();
+  const category = document.getElementById('ns-cat').value;
+  const price = parseFloat(document.getElementById('ns-price').value) || 0;
+  const qty = parseInt(document.getElementById('ns-qty').value) || 0;
+  const desc = document.getElementById('ns-desc').value.trim() || '—';
+  if(!name || !serial || !qty) { showAlert('stock-err', 'Part name, serial number and quantity are required.', 'err'); return; }
+  if(inventory.find(p => p.serial === serial)) { showAlert('stock-err', 'A part with this serial number already exists.', 'err'); return; }
+  inventory.push({serial, name, category, desc, price, qty});
+  ['ns-name','ns-serial','ns-price','ns-qty','ns-desc'].forEach(id => document.getElementById(id).value = '');
+  showAlert('stock-ok', `"${name}" has been added to inventory.`, 'ok');
+}
+
+function renderReports() {
+  const totalValue = inventory.reduce((a, p) => a + (p.price * p.qty), 0);
+  document.getElementById('r-value').textContent = '₹' + totalValue.toLocaleString('en-IN');
+  document.getElementById('r-total').textContent = transactions.length;
+
+  // Tech activity
+  const techMap = {};
+  transactions.forEach(t => { techMap[t.tech] = (techMap[t.tech] || 0) + 1; });
+  const techList = Object.entries(techMap).sort((a,b) => b[1]-a[1]);
+  const techEl = document.getElementById('r-tech-list');
+  if(!techList.length) { techEl.innerHTML = '<p style="font-size:14px;color:var(--text2);">No data yet.</p>'; }
+  else techEl.innerHTML = techList.map(([name, count], i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:13px;font-weight:600;color:var(--text3);width:20px;">#${i+1}</span>
+        <div class="avatar">${name.split(' ').map(n=>n[0]).join('').slice(0,2)}</div>
+        <span style="font-weight:500;">${name}</span>
+      </div>
+      <span style="font-size:14px;font-weight:600;">${count} entries</span>
+    </div>`).join('');
+
+  // Most used parts
+  const partMap = {};
+  transactions.filter(t=>t.direction==='OUT').forEach(t => { partMap[t.name] = (partMap[t.name]||0) + t.qty; });
+  const partList = Object.entries(partMap).sort((a,b)=>b[1]-a[1]);
+  const partEl = document.getElementById('r-parts-list');
+  if(!partList.length) { partEl.innerHTML = '<p style="font-size:14px;color:var(--text2);">No data yet.</p>'; }
+  else partEl.innerHTML = partList.map(([name, qty], i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span style="font-size:13px;font-weight:600;color:var(--text3);width:20px;">#${i+1}</span>
+        <span style="font-weight:500;">${name}</span>
+      </div>
+      <span style="font-size:14px;font-weight:600;">${qty} units out</span>
+    </div>`).join('');
+}
+
+function saveThreshold() {
+  lowThreshold = parseInt(document.getElementById('threshold-val').value) || 5;
+  localStorage.setItem('gegra-threshold', lowThreshold);
+  showAlert('threshold-ok', `Low stock alert set — will trigger when qty ≤ ${lowThreshold}.`, 'ok');
+}
+
+// ═══════════ CATEGORIES ═══════════
+function populateCategorySelects() {
+  const opts = categories.map(c => `<option value="${c}">${c}</option>`).join('');
+  const el = document.getElementById('ns-cat');
+  if(el) el.innerHTML = opts;
+}
+
+function renderCategories() {
+  populateCategorySelects();
+  const tbody = document.getElementById('cat-tbody');
+  tbody.innerHTML = categories.map((cat, i) => {
+    const count = inventory.filter(p => p.category === cat).length;
+    return `<tr>
+      <td style="color:var(--text3);font-size:13px;">${i+1}</td>
+      <td id="cat-name-${i}" style="font-weight:500;">${cat}</td>
+      <td><span class="badge badge-ok" style="${count===0?'background:var(--surface2);color:var(--text2);':''}">${count} part${count!==1?'s':''}</span></td>
+      <td>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <input type="text" id="cat-edit-${i}" value="${cat}" style="font-size:13px;padding:5px 9px;border:1.5px solid var(--border-strong);border-radius:var(--radius);background:var(--surface);color:var(--text);width:140px;outline:none;" onkeydown="if(event.key==='Enter')saveCategory(${i})">
+          <button class="btn btn-sm" onclick="saveCategory(${i})">Save</button>
+        </div>
+      </td>
+      <td>${count===0 ? `<button class="btn btn-sm btn-danger" onclick="deleteCategory(${i})">Remove</button>` : `<span style="font-size:12px;color:var(--text3);">In use</span>`}</td>
+    </tr>`;
+  }).join('');
+}
+
+function addCategory() {
+  const val = document.getElementById('cat-input').value.trim();
+  const errEl = document.getElementById('cat-err');
+  const okEl = document.getElementById('cat-ok');
+  if(!val) { showAlert('cat-err','Please enter a category name.','err'); return; }
+  if(categories.find(c => c.toLowerCase() === val.toLowerCase())) { showAlert('cat-err','This category already exists.','err'); return; }
+  errEl.style.display = 'none';
+  categories.push(val);
+  document.getElementById('cat-input').value = '';
+  showAlert('cat-ok', `"${val}" added to categories.`, 'ok');
+  renderCategories();
+}
+
+function saveCategory(i) {
+  const newName = document.getElementById('cat-edit-' + i).value.trim();
+  if(!newName) { showAlert('cat-err','Category name cannot be empty.','err'); return; }
+  if(categories.find((c,idx) => c.toLowerCase()===newName.toLowerCase() && idx!==i)) { showAlert('cat-err','That name already exists.','err'); return; }
+  const oldName = categories[i];
+  categories[i] = newName;
+  // update any existing inventory items using old name
+  inventory.forEach(p => { if(p.category === oldName) p.category = newName; });
+  showAlert('cat-ok', `Renamed "${oldName}" to "${newName}".`, 'ok');
+  renderCategories();
+}
+
+function deleteCategory(i) {
+  const name = categories[i];
+  const count = inventory.filter(p => p.category === name).length;
+  if(count > 0) { showAlert('cat-err', `Cannot remove — ${count} part(s) are using this category.`, 'err'); return; }
+  if(!confirm(`Remove category "${name}"?`)) return;
+  categories.splice(i, 1);
+  showAlert('cat-ok', `"${name}" removed.`, 'ok');
+  renderCategories();
+}
+
+
+  const np = document.getElementById('pw-new').value;
+  const cp = document.getElementById('pw-confirm').value;
+  if(!np) { showAlert('pw-err', 'Enter a new password.', 'err'); return; }
+  if(np !== cp) { showAlert('pw-err', 'Passwords do not match.', 'err'); return; }
+  const admin = users.find(u => u.role === 'admin');
+  if(admin) admin.password = np;
+  document.getElementById('pw-new').value = '';
+  document.getElementById('pw-confirm').value = '';
+  showAlert('pw-ok', 'Admin password updated successfully.', 'ok');
+}
+
+document.getElementById('confirm-overlay').addEventListener('click', function(e) {
+  if(e.target === this) closeConfirm();
+});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</body>
+</html>
